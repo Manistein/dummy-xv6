@@ -1,5 +1,5 @@
 # dummy-xv6
-This is a reimplemented version of the MIT xv6 operating system. The main reason for setting up this project is that I want to deeply understand the basic concepts of operating system. Practice is the sole criterion for testing truth, so it is meaningful to implement an operating system. This project will also try to add graphic interfaces for it, and make two simple game demos. The to-do list of this project is as follows:
+This is a reimplemented version of the MIT xv6 operating system. This simple OS is targeted for RISC-V architecture. The main reason for setting up this project is that I want to deeply understand the basic concepts of operating system. Practice is the sole criterion for testing truth, so it is meaningful to implement an operating system. This project will also try to add graphic interfaces for it, and make two simple game demos. The to-do list of this project is as follows:
  - [ ] The makefile of this project.
  - [ ] The initialization of the xv6 operating system.
  - [ ] Spinlock.
