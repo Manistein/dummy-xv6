@@ -15,7 +15,7 @@ _entry:
     csrr a1, mhartid
     addi a1, a1, 1
     mul a0, a0, a1
-    addi sp, sp, a0
+    add sp, sp, a0
 
     # jump to start funcion in kernel/start.c
     call start
