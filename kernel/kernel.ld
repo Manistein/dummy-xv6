@@ -2,7 +2,7 @@ OUTPUT_ARCH("riscv")
 ENTRY(_entry)
 
 SECTIONS {
-    // ensure that _entry is starting at 0x80000000
+    /* ensure that _entry is starting at 0x80000000 */
     . = 0x80000000; 
 
     .text : {
@@ -33,5 +33,5 @@ SECTIONS {
         *(.bss .bss.*)
     }
 
-    PROVIDE(end = .)
+    PROVIDE(end = .);
 }

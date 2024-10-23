@@ -1,0 +1,7 @@
+
+kernel/entry.o
+kernel/kernel
+kernel/kernel.asm
+kernel/kernel.sym
+*.o
+*.d
