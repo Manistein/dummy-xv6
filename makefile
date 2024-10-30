@@ -53,7 +53,7 @@ $K/kernel: $(OBJS) $K/kernel.ld
 # 	mkfs/mkfs fs.img README
 
 clean:
-	rm -f $K/*.o $K/*.d fs.img \
+	rm -f $K/*.o $K/*.d \
 	*/*.o */*.d */*.asm */*.sym 
 
 # try to generate a unique GDB port
