@@ -9,7 +9,7 @@ void timerinit();
 void start() {
     // Switch to supervisor mode after calling mret.
     uint64_t mstatus_v = r_mstatus();
-    mstatus_v = (mstatus_v & (~MSTATUS_MPP_MASK) | MSTATUS_MPP_S);    
+    mstatus_v = ((mstatus_v & (~MSTATUS_MPP_MASK)) | MSTATUS_MPP_S);    
     w_mstatus(mstatus_v);
 
     // Jump to main function in supervisor mode after calling mret.

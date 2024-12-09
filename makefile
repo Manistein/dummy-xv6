@@ -3,7 +3,9 @@ U=user
 
 OBJS = \
   $K/entry.o \
-  $K/start.o
+  $K/start.o \
+  $K/main.o \
+  $K/riscv.o
 
 # Try to find a riscv64 version of GCC/binutils
 # Try to infer the correct TOOLPREFIX if not set

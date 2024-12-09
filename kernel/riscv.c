@@ -9,12 +9,12 @@ uint64_t r_mhartid() {
 
 uint64_t r_tp() {
     uint64_t x;
-    asm volatile("csrr %0, tp" : "=r" (x));
+    asm volatile("mv %0, tp" : "=r" (x));
     return x;
 }
 
 void w_tp(uint64_t val) {
-    asm volatile("csrw tp, %0" : : "r" (val));
+    asm volatile("mv tp, %0" : : "r" (val));
 }
 
 uint64_t r_mstatus() {
@@ -96,7 +96,7 @@ uint64_t r_sstatus() {
     return x;
 }
 
-void r_sstatus(uint64_t val) {
+void w_sstatus(uint64_t val) {
     asm volatile("csrw sstatus, %0" : : "r" (val));
 }
 
