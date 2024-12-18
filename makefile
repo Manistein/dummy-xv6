@@ -5,7 +5,10 @@ OBJS = \
   $K/entry.o \
   $K/start.o \
   $K/main.o \
-  $K/riscv.o
+  $K/riscv.o \
+  $K/uart.o \
+  $K/console.o \
+  $K/printf.o 
 
 # Try to find a riscv64 version of GCC/binutils
 # Try to infer the correct TOOLPREFIX if not set

@@ -19,6 +19,8 @@
 #define SIE_STIE (1 << 5L)
 #define SIE_SEIE (1 << 9L)
 
+int cpuid();
+
 // for machine mode
 uint64_t r_mhartid();
 uint64_t r_tp();

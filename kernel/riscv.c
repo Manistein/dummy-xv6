@@ -1,5 +1,10 @@
 #include "riscv.h"
 
+int cpuid() {
+    int x = r_tp();
+    return x;
+}
+
 // for machine mode
 uint64_t r_mhartid() {
     uint64_t x;
