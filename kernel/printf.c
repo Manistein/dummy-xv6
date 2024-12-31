@@ -1,6 +1,17 @@
 #include "printf.h"
+#include "spinlock.h"
+
+struct {
+    struct spinlock lock;
+    int locking;
+} pr;
 
 static char digits[] = "0123456789abcdef";
+
+void printfinit(void) {
+    initlock(&pr.lock, "pr");
+    pr.locking = 1;
+}
 
 static void printint(int xx, int base, int sign) {
     char buf[32];
@@ -31,6 +42,11 @@ static void printint(int xx, int base, int sign) {
 }
 
 void printf(const char* fmt, ...) {
+    int locking = pr.locking;
+    if (locking) {
+        acquire(&pr.lock);
+    }
+
     va_list args;
     va_start(args, fmt);
 
@@ -153,4 +169,17 @@ void printf(const char* fmt, ...) {
     }
 
     va_end(args);
+
+    if (locking) {
+        release(&pr.lock);
+    }
+}
+
+void panic(const char* s) {
+    pr.locking = 0;
+    printf("panic: ");
+    printf(s);
+    printf("\n");
+    pr.locking = 1;
+    for(;;);
 }

@@ -8,7 +8,9 @@ OBJS = \
   $K/riscv.o \
   $K/uart.o \
   $K/console.o \
-  $K/printf.o 
+  $K/printf.o \
+  $K/spinlock.o \
+  $K/proc.o
 
 # Try to find a riscv64 version of GCC/binutils
 # Try to infer the correct TOOLPREFIX if not set

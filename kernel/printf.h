@@ -5,6 +5,8 @@
 #include <stdarg.h>
 #include "console.h"
 
+void printfinit(void);
 void printf(const char *fmt, ...);
+void panic(const char *s);
 
 #endif

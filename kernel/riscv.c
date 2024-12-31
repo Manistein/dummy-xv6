@@ -154,3 +154,16 @@ uint64_t r_time() {
 void w_stimecmp(uint64_t val) {
     asm volatile("csrw stimecmp, %0" : : "r" (val));
 }
+
+int intr_get() {
+    int x = r_sstatus();
+    return (x & SSTATUS_SIE_MASK) != 0;
+}
+
+void intr_off() {
+    w_sstatus(r_sstatus() & ~SSTATUS_SIE_MASK);
+}
+
+void intr_on() {
+    w_sstatus(r_sstatus() | SSTATUS_SIE_MASK);
+}

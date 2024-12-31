@@ -15,6 +15,9 @@
 
 #define MIE_STIE (1 << 5L)
 
+#define SSTATUS_SIE_MASK MSTATUS_SIE_MASK
+#define SSTATUS_SPP_MASK MSTATUS_SPP_MASK
+
 #define SIE_SSIE (1 << 1L)
 #define SIE_STIE (1 << 5L)
 #define SIE_SEIE (1 << 9L)
@@ -68,5 +71,9 @@ void w_sie(uint64_t val);
 
 uint64_t r_time();
 void w_stimecmp(uint64_t val);
+
+int intr_get();
+void intr_off();
+void intr_on();
 
 #endif
