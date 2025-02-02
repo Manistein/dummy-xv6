@@ -167,3 +167,7 @@ void intr_off() {
 void intr_on() {
     w_sstatus(r_sstatus() | SSTATUS_SIE_MASK);
 }
+
+void sfence_vma() {
+    asm volatile("sfence.vma zero, zero");
+}

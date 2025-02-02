@@ -24,7 +24,7 @@ void kinit() {
   initlock(&kmem.lock, "kmem");
   kmem.freelist = 0;
 
-  freerange(end, (void *)MAX_MEM_LIMIT);
+  freerange(end, (void *)PHYSTOP);
 }
 
 void *kalloc() {

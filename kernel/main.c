@@ -4,6 +4,7 @@
 #include "riscv.h"
 #include "kalloc.h"
 #include <string.h>
+#include "vm.h"
 
 static volatile int is_initialized = 0;
 
@@ -17,6 +18,9 @@ void main() {
 
         kinit();
 
+        kvminit();
+        kvmhartinit();
+        
         printf("CPU%d initialize success.\n", cpuid());
         is_initialized = 1;
 

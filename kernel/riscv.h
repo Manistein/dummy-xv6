@@ -22,6 +22,9 @@
 #define SIE_STIE (1 << 5L)
 #define SIE_SEIE (1 << 9L)
 
+// sv39 scheme
+#define MAKE_SATP(pagetable) ((uint64_t)(pagetable >> 12) | (8L << 60L))
+
 int cpuid();
 
 // for machine mode
@@ -75,5 +78,7 @@ void w_stimecmp(uint64_t val);
 int intr_get();
 void intr_off();
 void intr_on();
+
+void sfence_vma();
 
 #endif
