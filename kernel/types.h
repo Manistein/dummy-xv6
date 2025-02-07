@@ -5,6 +5,6 @@
 
 typedef uint64_t pde_t;
 typedef uint64_t pte_t;
-typedef uint64_t pagetable_t;
+typedef uint64_t* pagetable_t;
 
 #endif

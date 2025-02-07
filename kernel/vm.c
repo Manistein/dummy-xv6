@@ -16,7 +16,7 @@ void kvminit() {
 void kvmhartinit() {
     sfence_vma();
 
-    w_satp(MAKE_SATP(kpgtbl));
+    w_satp(MAKE_SATP((uint64_t)kpgtbl));
 
     sfence_vma();
 }
@@ -59,7 +59,7 @@ int mappages(pagetable_t pagetable, uint64_t va, uint64_t size, uint64_t pa, int
     if (size % PGSIZE != 0)
         panic("mappages:size is not page align");
 
-    unint64_t a, last;
+    uint64_t a, last;
     pte_t* pte;
 
     a = va;
@@ -67,9 +67,11 @@ int mappages(pagetable_t pagetable, uint64_t va, uint64_t size, uint64_t pa, int
 
     for (; a < last; a += PGSIZE, pa += PGSIZE) {
         if ((pte = walk(pagetable, a, 1)) == 0)
-            return 0
+            return 0;
+
         if (*pte & PTE_V)
             panic("mapages: remap");
+
         *pte = PA2PTE(pa) | perm | PTE_V;
     }
 
@@ -79,20 +81,22 @@ int mappages(pagetable_t pagetable, uint64_t va, uint64_t size, uint64_t pa, int
 // walk returns a pointer to the PTE in the pagetable for the virtual address.
 pte_t* walk(pagetable_t pagetable, uint64_t va, int alloc) {
     pte_t* pte;
+
     for (int level = 2; level > 0; level--) {
         pte = &pagetable[PTX(va, level)];
         // If the PTE is valid, just use it.
         if (*pte & PTE_V) {
-        pagetable = (pagetable_t)PTE2PA(*pte);
+            pagetable = (pagetable_t)PTE2PA(*pte);
         } else 
         // If the PTE is invalid, allocate a new page table.
         {
-        if (!alloc || (pagetable = (pagetable_t)kalloc()) == 0)
-            return 0;
-        memset(pagetable, 0, PGSIZE);
-        *pte = PA2PTE(pagetable) | PTE_V;
+            if (!alloc || (pagetable = (pagetable_t)kalloc()) == 0)
+                return 0;
+            memset(pagetable, 0, PGSIZE);
+            *pte = PA2PTE((uint64_t)pagetable) | PTE_V;
         }
     }
+
     return &pagetable[PTX(va, 0)];
 }
 
@@ -143,7 +147,7 @@ int uvmalloc(pagetable_t pagetable, uint64_t oldsz, uint64_t newsz, int perm) {
     if (newsz <= oldsz)
         return oldsz; 
     
-    for (uint64_t a = PROUNDUP(oldsz); a < newsz; a += PGSIZE) {
+    for (uint64_t a = oldsz; a < PROUNDUP(newsz); a += PGSIZE) {
         uint64_t pa = (uint64_t)kalloc();
         if (pa == 0) {
             uvmdealloc(pagetable, a, oldsz);
@@ -171,13 +175,13 @@ int uvmdealloc(pagetable_t pagetable, uint64_t oldsz, uint64_t newsz) {
 
 int freewalk(pagetable_t pagetable) {
     for (int i = 0; i < 512; i++) {
-        pte_t pte = pagetable[i];
-        if ((pte & PTE_V) && (pte & (PTE_R | PTE_W | PTE_X | PTE_U) == 0)) {
-            pagetable_t child = (pagetable_t)PTE2PA(pte);
+        pte_t* pte = &pagetable[i];
+        if ((*pte & PTE_V) && (*pte & (PTE_R | PTE_W | PTE_X | PTE_U) == 0)) {
+            pagetable_t child = (pagetable_t)PTE2PA(*pte);
             freewalk(child);
             pagetable[i] = 0;
-        } else if (pte & PTE_V) {
-            panic("freewalk");
+        } else if (*pte & PTE_V) {
+            panic("freewalk: not a leaf");
         }
     }
     kfree((void*)pagetable);
