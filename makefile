@@ -12,7 +12,8 @@ OBJS = \
   $K/spinlock.o \
   $K/proc.o \
   $K/kalloc.o \
-  $K/string.o
+  $K/string.o \
+  $K/vm.o
 
 # Try to find a riscv64 version of GCC/binutils
 # Try to infer the correct TOOLPREFIX if not set

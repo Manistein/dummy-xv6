@@ -2,6 +2,9 @@
 #include "vm.h"
 #include "printf.h"
 #include "proc.h"
+#include "riscv.h"
+#include "string.h"
+#include "kalloc.h"
 
 extern char etext[]; // kernel.ld sets this to the end of the kernel code.
 extern char trampoline[]; // trampoline.S
@@ -176,7 +179,7 @@ int uvmdealloc(pagetable_t pagetable, uint64_t oldsz, uint64_t newsz) {
 int freewalk(pagetable_t pagetable) {
     for (int i = 0; i < 512; i++) {
         pte_t* pte = &pagetable[i];
-        if ((*pte & PTE_V) && (*pte & (PTE_R | PTE_W | PTE_X | PTE_U) == 0)) {
+        if ((*pte & PTE_V) && ((*pte & (PTE_R | PTE_W | PTE_X | PTE_U)) == 0)) {
             pagetable_t child = (pagetable_t)PTE2PA(*pte);
             freewalk(child);
             pagetable[i] = 0;

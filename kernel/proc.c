@@ -3,6 +3,9 @@
 #include "param.h"
 #include "riscv.h"
 #include "vm.h"
+#include "kalloc.h"
+#include "string.h"
+#include "printf.h"
 
 static struct cpu cpus[NCPU];
 static struct proc procs[NPROC];
