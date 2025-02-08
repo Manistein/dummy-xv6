@@ -68,7 +68,10 @@ int mappages(pagetable_t pagetable, uint64_t va, uint64_t size, uint64_t pa, int
     a = va;
     last = va + size;
 
+    // printf("pagetable:0x%x -------------\n", (uint64_t)pagetable);
     for (; a < last; a += PGSIZE, pa += PGSIZE) {
+        // printf("map pa:0x%x\n", pa);
+
         if ((pte = walk(pagetable, a, 1)) == 0)
             return 0;
 
