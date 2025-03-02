@@ -20,6 +20,11 @@ void main() {
 
         kvminit();
         kvmhartinit();
+
+        procinit();
+        prochartinit();
+
+        test_userinit();
         
         printf("CPU%d initialize success.\n", cpuid());
         is_initialized = 1;
@@ -39,4 +44,6 @@ void main() {
 
         printf("Initialization of CPU%d complete.\n", cpuid());
     }
+
+    scheduler();
 }
