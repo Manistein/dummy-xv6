@@ -12,6 +12,7 @@ void usertrap() {
 }
 
 void usertrapret() {
+    // Disable interrupt while running usertrapret
     intr_off();
 
     w_stvec((uint64_t)(TRAMPOLINE + (uservec - trampoline)));
@@ -22,6 +23,13 @@ void usertrapret() {
     p->trapframe->kernel_sp = r_sp();
     p->trapframe->kernel_trap = (uint64_t)usertrap;
     p->trapframe->kernel_hartid = r_tp();
+    
+    uint64_t sstatus = r_sstatus();
+    sstatus = (sstatus & ~SSTATUS_SPP_MASK)  | 0;   // return to user mode
+    sstatus = sstatus | SSTATUS_SPIE_MASK;          // enable interrupts in user mode
+    w_sstatus(sstatus);
+
+    w_sepc(p->trapframe->epc);
 
     uint64_t satp = MAKE_SATP((uint64_t)p->pagetable);
     ((void (*)(uint64_t))trampoline_userret)(satp);

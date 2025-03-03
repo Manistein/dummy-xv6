@@ -17,6 +17,7 @@
 
 #define SSTATUS_SIE_MASK MSTATUS_SIE_MASK
 #define SSTATUS_SPP_MASK MSTATUS_SPP_MASK
+#define SSTATUS_SPIE_MASK (1 << 5L)
 
 #define SIE_SSIE (1 << 1L)
 #define SIE_STIE (1 << 5L)
