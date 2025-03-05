@@ -8,7 +8,21 @@
 extern char trampoline[], uservec[], userret[];
 
 void usertrap() {
+    struct proc* p = myproc();
 
+    uint64_t sstatus = r_sstatus();
+    if ((sstatus & SSTATUS_SPP_MASK) != 0) {
+        panic("usertrap: not from user mode");
+    }
+
+    if ((sstatus & SSTATUS_SPIE_MASK) == 0) {
+        panic("usertrap: interrupts disabled");
+    }
+
+    uint64_t sepc = r_sepc();
+    p->trapframe->epc = sepc;
+        
+    usertrapret();
 }
 
 void usertrapret() {

@@ -28,7 +28,9 @@ static struct proc procs[NPROC];
 
 static struct proc* initproc;
 static struct proc* initproc2; // for test;
+
 struct spinlock alloclock;
+static uint64_t nextpid = 0;
 
 struct cpu* mycpu() {
     int id = cpuid();
@@ -104,24 +106,6 @@ struct proc* userinit() {
         panic("fail to allocproc");
     }
 
-    p->pagetable = uvmcreate();
-    if (p->pagetable == 0) {
-        panic("fail to uvmcreate");
-    }
-
-    p->trapframe = (struct trapframe*)kalloc();
-    if (p->trapframe == 0) {
-        panic("fail to kalloc trapframe");
-    }
-
-    if (!mappages(p->pagetable, TRAPFRAME, PGSIZE, (uint64_t)p->trapframe, PTE_R | PTE_W)) {
-        panic("fail to mappages trapframe");
-    }
-
-    if (!mappages(p->pagetable, TRAMPOLINE, PGSIZE, (uint64_t)trampoline, PTE_R | PTE_X)) {
-        panic("fail to mappages trampoline");
-    }
-
     void* mem = kalloc();
     if (mem == 0) {
         panic("fail to kalloc");
@@ -135,7 +119,7 @@ struct proc* userinit() {
 
     p->sz = PGSIZE;
     p->context.ra = forkret;
-    p->context.sp = PGSIZE;
+    p->context.sp = p->kstack + PGSIZE;
     p->state = RUNNABLE;
 
     return p;
@@ -172,32 +156,66 @@ void scheduler() {
     }
 }
 
-struct proc* allocproc() {
-    acquire(&alloclock);
+static uint64_t allocpid() {
+    uint64_t pid = 0;
 
-    struct proc* found_proc = NULL;
+    acquire(&alloclock);
+    pid = nextpid++;
+    release(&alloclock);
+
+    return pid;
+}
+
+struct proc* allocproc() {
+    struct proc* p = NULL;
     for (int i = 0; i < NPROC; i++) {
-        struct proc* p = &procs[i];
+        p = &procs[i];
         acquire(&p->lock);
         if (p->state == UNUSED) {
             p->state = USED;
             release(&p->lock);
-
-            found_proc = p;
-            break;
+            goto found;
         }
         else {
             release(&p->lock);
         }
     }
 
-    release(&alloclock);
-    return found_proc;
+    return NULL;
+found:
+    p->pid = allocpid();
+
+    p->pagetable = uvmcreate();
+    if (p->pagetable == 0) {
+        panic("fail to uvmcreate");
+    }
+
+    p->trapframe = (struct trapframe*)kalloc();
+    if (p->trapframe == 0) {
+        panic("fail to kalloc trapframe");
+    }
+
+    if (!mappages(p->pagetable, TRAPFRAME, PGSIZE, (uint64_t)p->trapframe, PTE_R | PTE_W)) {
+        panic("fail to mappages trapframe");
+    }
+
+    if (!mappages(p->pagetable, TRAMPOLINE, PGSIZE, (uint64_t)trampoline, PTE_R | PTE_X)) {
+        panic("fail to mappages trampoline");
+    }
+    
+    return p;
 }
 
-void deallocproc(struct proc* p) {
+void freeproc(struct proc* p) {
     acquire(&p->lock);
+
     p->state = UNUSED;
+
+    uvmfree(p->pagetable, p->sz);
+    p->pagetable = 0;
+    kfree((void*)p->trapframe);
+    p->trapframe = 0;
+
     release(&p->lock);
 }
 

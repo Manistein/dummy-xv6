@@ -32,6 +32,7 @@ struct cpu {
 };
 
 struct proc {
+    uint64_t pid;                // Process ID
     struct cpu* cpu;
     uint64_t sz;                 // Size of process memory (bytes)
     pagetable_t pagetable;       // Page table
@@ -56,7 +57,7 @@ struct proc* userinit();
 void scheduler();
 
 struct proc* allocproc();
-void deallocproc(struct proc* p);
+void freeproc(struct proc* p);
 
 void forkret();
 
