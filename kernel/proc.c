@@ -11,6 +11,8 @@
 void kernelvec();
 void swtch(struct context** old, struct context* new);
 
+void sched();
+
 extern char trampoline[];
 
 // States of processes
@@ -79,7 +81,7 @@ void procinit() {
     for (int i = 0; i < NPROC; i ++) {
         struct proc* p = &procs[i];
         p->state = UNUSED;
-        p->kstack = (uint64_t)KSTACK((uint64_t)p);
+        p->kstack = (uint64_t)KSTACK((uint64_t)(p - procs));
         initlock(&p->lock, "proc");
         memset(&p->context, 0, sizeof(p->context));
     }
@@ -238,4 +240,33 @@ void forkret() {
     }
 
     usertrapret();
+}
+
+void yield() {
+    struct proc* p = myproc();
+    acquire(&p->lock);
+    p->state = RUNNABLE;
+    sched();
+    release(&p->lock);
+}
+
+void sched() {
+    struct cpu* c = mycpu();
+    struct proc* p = c->proc;
+
+    if (c->noff != 1) {
+        panic("sched locks");
+    }
+
+    if (p->state == RUNNING) {
+        panic("sched running");
+    }
+
+    if (intr_get()) {
+        panic("sched interruptible");
+    }
+
+    int intena = c->intena;
+    swtch(&p->context, &c->context);
+    c->intena = intena;
 }

@@ -50,6 +50,10 @@ struct trapframe {
     uint64_t t6;
 };
 
+void kerneltrap();
+void usertrap();
 void usertrapret();
+
+int devintr(uint64_t scause);
 
 #endif 

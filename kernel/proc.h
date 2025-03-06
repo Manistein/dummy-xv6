@@ -61,4 +61,6 @@ void freeproc(struct proc* p);
 
 void forkret();
 
+void yield();
+
 #endif
