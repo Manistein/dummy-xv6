@@ -6,5 +6,6 @@
 void *memset(void *dst, int c, uint64_t n);
 void* memcpy(void *dst, const void *src, uint64_t n);
 char* strcpy(char *dst, const char *src);
+int strlen(const char *s);
 
 #endif

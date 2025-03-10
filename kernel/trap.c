@@ -57,6 +57,7 @@ void usertrap() {
     if (scause == 8) {
         // system call
         intr_on();
+        syscall();
     }
     else if (which_dev = devintr(scause) == 0) {
         printf("usertrap(): unexpected scause %p pid=%d\n", scause, p->pid);

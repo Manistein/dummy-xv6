@@ -1,6 +1,8 @@
 #ifndef _syscall_h_
 #define _syscall_h_
 
-#include "common.h"
+#define SYS_write 0 
+
+void syscall();
 
 #endif
