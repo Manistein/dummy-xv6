@@ -1,5 +1,4 @@
 # kernelvec
-#include "trap.h"
 
 .global kernelvec
 .global kerneltrap 

@@ -155,6 +155,12 @@ void w_stimecmp(uint64_t val) {
     asm volatile("csrw stimecmp, %0" : : "r" (val));
 }
 
+uint64_t r_scause() {
+    uint64_t x;
+    asm volatile("csrr %0, scause" : "=r" (x));
+    return x;
+}
+
 int intr_get() {
     int x = r_sstatus();
     return (x & SSTATUS_SIE_MASK) != 0;

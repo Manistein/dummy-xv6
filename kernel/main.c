@@ -5,6 +5,7 @@
 #include "kalloc.h"
 #include <string.h>
 #include "vm.h"
+#include "proc.h"
 
 static volatile int is_initialized = 0;
 
@@ -15,7 +16,6 @@ void main() {
 
         printf("dummyxv6 booting!\n");
         printf("start to initialize the kernel.\n");
-
         kinit();
 
         kvminit();

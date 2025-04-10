@@ -76,6 +76,8 @@ void w_sie(uint64_t val);
 uint64_t r_time();
 void w_stimecmp(uint64_t val);
 
+uint64_t r_scause();
+
 int intr_get();
 void intr_off();
 void intr_on();

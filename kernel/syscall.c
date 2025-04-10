@@ -2,8 +2,7 @@
 #include "proc.h"
 #include "printf.h"
 #include "trap.h"
-
-extern void sys_write();
+#include "sysfile.h"
 
 static uint64_t (*syscalls[])(void) = {
     [SYS_write] = sys_write,

@@ -13,7 +13,7 @@ SECTIONS {
         *(trampsec)
         . = ALIGN(0x1000);
 
-        ASSERT(. - trampoline == 0x0, "trampoline segment is not page align");
+        ASSERT(. - trampoline == 0x1000, "trampoline segment is not page align");
         PROVIDE(etext = .);
     }  
 

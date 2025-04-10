@@ -1,0 +1,2 @@
+spin:
+    j spin

@@ -9,7 +9,7 @@
 #include "trap.h"
 
 void kernelvec();
-void swtch(struct context** old, struct context* new);
+void swtch(struct context* old, struct context* new);
 
 void sched();
 
@@ -88,7 +88,7 @@ void procinit() {
 }
 
 void prochartinit() {
-    w_stvec(kernelvec); 
+    w_stvec((uint64_t)kernelvec); 
 }
 
 void test_userinit() {
@@ -99,7 +99,7 @@ void test_userinit() {
 }
 
 static char initcode[] = {
-    // TODO
+    0x6f, 0x00, 0x00, 0x00, // jal x0, 0
 };
 
 struct proc* userinit() {
@@ -120,16 +120,28 @@ struct proc* userinit() {
     }
 
     p->sz = PGSIZE;
-    p->context.ra = forkret;
+    p->context.ra = (uint64_t)forkret;
     p->context.sp = p->kstack + PGSIZE;
     p->state = RUNNABLE;
 
     return p;
 }
 
-void scheduler() {
-    struct proc* p = NULL;
-    struct cpu* c = mycpu();
+/*
+ * The scheduler function implements a simple round-robin scheduler for xv6.
+ * It runs continuously, searching for RUNNABLE processes in the process table.
+ * When a runnable process is found, it switches to that process's context and
+ * lets it execute. If no runnable process exists, the CPU enters sleep state
+ * using WFI (Wait For Interrupt) instruction.
+ *
+ * The scheduler holds the per-process lock while examining the process state,
+ * and releases it before moving to the next process. This ensures atomicity
+ * during process state transitions.
+ */
+void scheduler()
+{
+    struct proc *p = NULL;
+    struct cpu *c = mycpu();
     c->proc = NULL;
 
     for (;;) {
@@ -144,6 +156,9 @@ void scheduler() {
 
                 p->state = RUNNING;
                 c->proc = p;
+
+                // Test printf
+                printf("scheduler: switch to pid %d in core %d\n", p->pid, cpuid());
                 swtch(&c->context, &p->context);
 
                 c->proc = NULL;
@@ -168,9 +183,22 @@ static uint64_t allocpid() {
     return pid;
 }
 
-struct proc* allocproc() {
-    struct proc* p = NULL;
-    for (int i = 0; i < NPROC; i++) {
+/*
+ * Allocate a new process structure and initialize its memory layout.
+ * Searches for an unused proc structure in the process table.
+ * If found, allocates page table, trapframe, and maps necessary pages.
+ *
+ * Returns:
+ *   Pointer to the newly allocated proc structure if successful
+ *   NULL if no free proc structure is available
+ *
+ * Note: Caller must hold no locks when calling this function.
+ */
+struct proc *allocproc()
+{
+    struct proc *p = NULL;
+    for (int i = 0; i < NPROC; i++)
+    {
         p = &procs[i];
         acquire(&p->lock);
         if (p->state == UNUSED) {

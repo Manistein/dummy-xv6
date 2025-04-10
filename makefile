@@ -13,7 +13,13 @@ OBJS = \
   $K/proc.o \
   $K/kalloc.o \
   $K/string.o \
-  $K/vm.o
+  $K/vm.o \
+  $K/trap.o \
+  $K/trampoline.o \
+  $K/swtch.o \
+  $K/kernelvec.o \
+  $K/syscall.o \
+  $K/sysfile.o 
 
 # Try to find a riscv64 version of GCC/binutils
 # Try to infer the correct TOOLPREFIX if not set
@@ -53,6 +59,10 @@ CFLAGS += -I.
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 
 LDFLAGS = -z max-page-size=4096
+
+ASFLAGS = -march=rv64gc -mabi=lp64d
+%.o: %.S
+	$(CC) $(CFLAGS) $(ASFLAGS) -c $< -o $@
 
 $K/kernel: $(OBJS) $K/kernel.ld
 	$(LD) $(LDFLAGS) -T $K/kernel.ld -o $K/kernel $(OBJS)

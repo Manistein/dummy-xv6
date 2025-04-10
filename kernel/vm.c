@@ -135,13 +135,13 @@ int uvmunmap(pagetable_t pagetable, uint64_t va, uint64_t size, int do_free) {
 }
 
 // uvmcreate creates a new pagetable for a user process as its root pagetable.
-uint64_t uvmcreate() {
+pagetable_t uvmcreate() {
     pagetable_t pagetable;
     pagetable = (pagetable_t)kalloc();
     if (pagetable == 0)
         return 0;
     memset(pagetable, 0, PGSIZE);
-    return (uint64_t)pagetable;
+    return pagetable;
 }
 
 void uvmfree(pagetable_t pagetable, uint64_t sz) {

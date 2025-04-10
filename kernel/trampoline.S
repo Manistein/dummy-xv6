@@ -1,5 +1,4 @@
 #include "memlayout.h"
-#include "riscv.h"
 
 .section trampsec
 
@@ -11,7 +10,7 @@ trampoline:
 .global uservec
 uservec:
     csrw sscratch, a0
-    ld a0, TRAPFRAME
+    li a0, TRAPFRAME
 
     sd ra, 40(a0)
     sd sp, 48(a0)
