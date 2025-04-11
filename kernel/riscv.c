@@ -81,7 +81,13 @@ void w_mie(uint64_t val) {
 }
 
 void w_menvcfg(uint64_t val) {
-    asm volatile("csrw menvcfg, %0" : : "r" (val));
+    asm volatile("csrw 0x30a, %0" : : "r" (val));
+}
+
+uint64_t r_menvcfg() {
+    uint64_t x;
+    asm volatile("csrr %0, 0x30a" : "=r" (x));
+    return x;
 }
 
 uint32_t r_mcounteren() {

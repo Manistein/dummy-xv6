@@ -19,7 +19,7 @@ void kvminit() {
 void kvmhartinit() {
     sfence_vma();
 
-    w_satp(MAKE_SATP((uint64_t)kpgtbl));
+    w_satp(MAKE_SATP(kpgtbl));
 
     sfence_vma();
 }

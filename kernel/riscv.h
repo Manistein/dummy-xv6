@@ -23,8 +23,10 @@
 #define SIE_STIE (1 << 5L)
 #define SIE_SEIE (1 << 9L)
 
+// use riscv sv39 scheme
+#define SATP_SV39 (8L << 60)
 // sv39 scheme
-#define MAKE_SATP(pagetable) ((uint64_t)(pagetable >> 12) | (8L << 60L))
+#define MAKE_SATP(pagetable) (SATP_SV39 | ((uint64_t)pagetable >> 12))
 
 int cpuid();
 
@@ -52,6 +54,7 @@ uint64_t r_mie();
 void w_mie(uint64_t val);
 
 void w_menvcfg(uint64_t val);
+uint64_t r_menvcfg();
 
 uint32_t r_mcounteren();
 void w_mcounteren(uint64_t val);

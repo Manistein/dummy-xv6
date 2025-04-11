@@ -40,7 +40,7 @@ void timerinit() {
     w_mie(r_mie() | MIE_STIE);
 
     // Set STCE bit to 1 to enable the timer in supervisor mode.
-    w_menvcfg(1ul << 63);
+    w_menvcfg(r_menvcfg() | (1ul << 63));
 
     // Set TM bit to 1 to enable the timer in supervisor mode.
     w_mcounteren(r_mcounteren() | 2);
