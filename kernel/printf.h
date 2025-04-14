@@ -8,5 +8,6 @@
 void printfinit(void);
 void printf(const char *fmt, ...);
 void panic(const char *s);
+void sprintf_unsafe(char *buf, const char *fmt, ...);
 
 #endif

@@ -60,6 +60,7 @@ void push_off() {
 
     // disable interrupts to avoid deadlock.
     mycpu()->noff += 1;
+
     intr_off();
 }
 

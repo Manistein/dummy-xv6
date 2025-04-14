@@ -183,3 +183,62 @@ void panic(const char* s) {
     pr.locking = 1;
     for(;;);
 }
+
+void sprintf_unsafe(char* buf, const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+
+    char* p = buf;
+    for (const char* f = fmt; *f != 0; f++) {
+        if (*f != '%') {
+            *p++ = *f;
+            continue;
+        }
+
+        f++;
+
+        switch(*f) {
+            case 'c': {
+                int c = va_arg(args, int);
+                *p++ = (char)c;
+                break;
+            }
+            case 'd': {
+                int d = va_arg(args, int);
+                printint(d, 10, 1);
+                break;
+            }
+            case 'x': {
+                int x = va_arg(args, int);
+                *p++ = '0';
+                *p++ = 'x';
+                printint(x, 16, 0);
+                break;
+            }
+            case 's': {
+                char* s = va_arg(args, char*);
+                for (char* q = s; *q != 0; q++) {
+                    *p++ = *q;
+                }
+                break;
+            }
+            case 'u': {
+                unsigned int u = va_arg(args, unsigned int);
+                printint(u, 10, 0);
+                break;
+            }
+            case '%': {
+                *p++ = '%';
+                break;
+            }
+            default: {
+                *p++ = '%';
+                *p++ = *f;
+                break;
+            }
+        }
+    }
+
+    *p = '\0';
+    va_end(args);
+}

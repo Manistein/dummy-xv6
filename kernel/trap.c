@@ -19,8 +19,6 @@ extern char trampoline[], uservec[], userret[], kernelvec[];
  */
 void kerneltrap()
 {
-    struct proc *p = myproc();
-
     uint64_t sstatus = r_sstatus();
     if (((sstatus & SSTATUS_SPP_MASK) >> 8) != 1)
     {
@@ -37,11 +35,11 @@ void kerneltrap()
     // TODO: handle interrupt
     int where_dev = 0;
     if ((where_dev = devintr(scause)) == 0) {
-        printf("kerneltrap(): unexpected scause %p pid=%d\n", scause, p->pid);
         panic("kerneltrap: unexpected scause");
     }
 
-    if (where_dev == 2) {
+    struct proc *p = myproc();
+    if (where_dev == 2 && (p != NULL) && p->state == RUNNING) {
         yield();
     }
     
@@ -149,11 +147,12 @@ int devintr(uint64_t scause) {
     }
     // timer interrupt
     else if (scause == 0x8000000000000005L) {
+        printf("devintr(): timer interrupt scause:%llu\n", scause);
         clockintr();
         return 2;
     }
     else {
-        printf("unexpected scause %p\n", scause);
+        printf("devintr():unexpected scause %llu\n", scause);
     }
 
     return 0;

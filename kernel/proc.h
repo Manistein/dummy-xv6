@@ -4,6 +4,16 @@
 #include "types.h"
 #include "spinlock.h"
 
+// States of processes
+enum ProcessStates {
+    UNUSED,
+    USED,
+    SLEEPING,
+    RUNNABLE,
+    RUNNING,
+    ZOMBIE
+};
+
 // context switch 
 struct context {
     uint64_t ra; // Return address

@@ -15,15 +15,6 @@ void sched();
 
 extern char trampoline[];
 
-// States of processes
-enum ProcessStates {
-    UNUSED,
-    USED,
-    SLEEPING,
-    RUNNABLE,
-    RUNNING,
-    ZOMBIE
-};
 
 static struct cpu cpus[NCPU];
 static struct proc procs[NPROC];
