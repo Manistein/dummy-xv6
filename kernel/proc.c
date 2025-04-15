@@ -106,7 +106,7 @@ struct proc* userinit() {
 
     memcpy(mem, initcode, sizeof(initcode));
 
-    if (!mappages(p->pagetable, 0, PGSIZE, (uint64_t)mem, PTE_R | PTE_X)) {
+    if (!mappages(p->pagetable, 0, PGSIZE, (uint64_t)mem, PTE_R | PTE_X | PTE_U)) {
         panic("fail to mappages initcode");
     }
 
@@ -254,7 +254,7 @@ void forkret() {
     p->trapframe->sp = p->sz + PGSIZE;
     p->sz += PGSIZE;
 
-    if (!mappages(p->pagetable, p->sz - PGSIZE, PGSIZE, (uint64_t)stack, PTE_R | PTE_W)) {
+    if (!mappages(p->pagetable, p->sz - PGSIZE, PGSIZE, (uint64_t)stack, PTE_R | PTE_W | PTE_U)) {
         panic("fail to mappages stack");
     }
 

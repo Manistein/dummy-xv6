@@ -124,7 +124,7 @@ void usertrapret()
     p->trapframe->kernel_hartid = r_tp();           // save hart id 
     
     uint64_t sstatus = r_sstatus();
-    sstatus = (sstatus & ~SSTATUS_SPP_MASK)  | 0;   // return to user mode
+    sstatus = (sstatus & ~SSTATUS_SPP_MASK);   // return to user mode
     sstatus = sstatus | SSTATUS_SPIE_MASK;          // enable interrupts in user mode
     w_sstatus(sstatus);
 
