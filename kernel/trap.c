@@ -85,14 +85,12 @@ void usertrap()
         printf("usertrap(): unexpected scause %p pid=%d\n", scause, p->pid);
         panic("usertrap: unexpected scause");
     }
-    else {
-        panic("usertrap: not handled");
-    }
 
     if (which_dev == 2) {
         // test printf
-        printf("usertrap():: pid:%d yield in core %d\n", p->pid, cpuid()); 
+        printf("usertrap():: pid:%d before yield in core %d\n", p->pid, cpuid()); 
         yield();
+        printf("usertrap():: pid:%d after yield in core %d\n", p->pid, cpuid()); 
     }
         
     usertrapret();
@@ -130,14 +128,13 @@ void usertrapret()
 
     w_sepc(p->trapframe->epc); // restore user program counter
 
-    printf("usertrapret: stime:%d stimecmp:%d \n", r_time(), r_stimecmp());
     uint64_t satp = MAKE_SATP((uint64_t)p->pagetable);
     ((void (*)(uint64_t))trampoline_userret)(satp); // jump to userret trampoline
 }
 
 static void clockintr() {
-    // ask for a timer interrupt in 100ms later
-    w_stimecmp(r_time() + 1000000);
+    // ask for a timer interrupt in 1000ms later
+    w_stimecmp(r_time() + 10000000);
 }
 
 int devintr(uint64_t scause) { 
@@ -147,7 +144,6 @@ int devintr(uint64_t scause) {
     }
     // timer interrupt
     else if (scause == 0x8000000000000005L) {
-        printf("devintr(): timer interrupt scause:%llu\n", scause);
         clockintr();
         return 2;
     }

@@ -20,7 +20,7 @@ static struct cpu cpus[NCPU];
 static struct proc procs[NPROC];
 
 static struct proc* initproc;
-// static struct proc* initproc2; // for test;
+static struct proc* initproc2; // for test;
 
 struct spinlock alloclock;
 static uint64_t nextpid = 0;
@@ -86,7 +86,7 @@ void test_userinit() {
     printf("test_userinit\n");
 
     initproc = userinit();
-    // initproc2 = userinit();
+    initproc2 = userinit();
 }
 
 static char initcode[] = {
@@ -155,7 +155,7 @@ void scheduler()
                 c->proc = p;
 
                 // Test printf
-                // printf("scheduler: switch to pid %d in core %d\n", p->pid, cpuid());
+                printf("scheduler: switch to pid %d in core %d\n", p->pid, cpuid());
                 swtch(&c->context, &p->context);
 
                 c->proc = NULL;
