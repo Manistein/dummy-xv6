@@ -125,19 +125,19 @@ void usertrapret()
     
     uint64_t sstatus = r_sstatus();
     sstatus = (sstatus & ~SSTATUS_SPP_MASK);   // return to user mode
-    sstatus = sstatus | SSTATUS_SPIE_MASK;          // enable interrupts in user mode
+    sstatus = sstatus | SSTATUS_SPIE_MASK;     // enable interrupts in user mode
     w_sstatus(sstatus);
 
     w_sepc(p->trapframe->epc); // restore user program counter
 
+    printf("usertrapret: stime:%d stimecmp:%d \n", r_time(), r_stimecmp());
     uint64_t satp = MAKE_SATP((uint64_t)p->pagetable);
     ((void (*)(uint64_t))trampoline_userret)(satp); // jump to userret trampoline
 }
 
 static void clockintr() {
     // ask for a timer interrupt in 100ms later
-    uint64_t timecmp = r_time() + 1000000;
-    w_stimecmp(timecmp);
+    w_stimecmp(r_time() + 1000000);
 }
 
 int devintr(uint64_t scause) { 

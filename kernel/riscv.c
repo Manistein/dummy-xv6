@@ -151,14 +151,30 @@ void w_sie(uint64_t val) {
     asm volatile("csrw sie, %0" : : "r" (val));
 }
 
+uint64_t r_sip() {
+    uint64_t x;
+    asm volatile("csrr %0, sip" : "=r" (x));
+    return x;
+}
+
+void w_sip(uint64_t val) {
+    asm volatile("csrw sip, %0" : : "r" (val));
+}
+
 uint64_t r_time() {
     uint64_t x;
     asm volatile("csrr %0, time" : "=r" (x));
     return x;
 }
 
+uint64_t r_stimecmp() {
+    uint64_t x;
+    asm volatile("csrr %0, 0x14d" : "=r" (x)); // for 64-bit
+    return x;
+}
+
 void w_stimecmp(uint64_t val) {
-    asm volatile("csrw stimecmp, %0" : : "r" (val));
+    asm volatile("csrw 0x14d, %0" : : "r" (val)); // for 64-bit
 }
 
 uint64_t r_scause() {

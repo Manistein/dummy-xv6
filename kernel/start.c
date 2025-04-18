@@ -32,6 +32,9 @@ void start() {
 
     timerinit();
 
+    int id = r_mhartid();
+    w_tp(id);
+
     asm volatile("mret");
 }
 
@@ -42,9 +45,9 @@ void timerinit() {
     // Set STCE bit to 1 to enable the timer in supervisor mode.
     w_menvcfg(r_menvcfg() | (1ul << 63));
 
-    // Set TM bit to 1 to enable the timer in supervisor mode.
+    // allow supervisor to use stimecmp and time.
     w_mcounteren(r_mcounteren() | 2);
 
-    // A timer interrupt will be triggered after 1s.
+    // A timer interrupt will be triggered after 100ms.
     w_stimecmp(r_time() + 1000000);
 }

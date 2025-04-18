@@ -76,7 +76,11 @@ void w_stvec(uint64_t val);
 uint64_t r_sie();
 void w_sie(uint64_t val);
 
+uint64_t r_sip();
+void w_sip(uint64_t val);
+
 uint64_t r_time();
+uint64_t r_stimecmp();
 void w_stimecmp(uint64_t val);
 
 uint64_t r_scause();

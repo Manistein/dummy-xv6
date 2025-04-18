@@ -20,7 +20,7 @@ static struct cpu cpus[NCPU];
 static struct proc procs[NPROC];
 
 static struct proc* initproc;
-static struct proc* initproc2; // for test;
+// static struct proc* initproc2; // for test;
 
 struct spinlock alloclock;
 static uint64_t nextpid = 0;
@@ -86,11 +86,11 @@ void test_userinit() {
     printf("test_userinit\n");
 
     initproc = userinit();
-    initproc2 = userinit();
+    // initproc2 = userinit();
 }
 
 static char initcode[] = {
-    0x6f, 0x00, 0x00, 0x00, // jal x0, 0
+    0x6f, 0x00, 0x00, 0x00  // j 0x0
 };
 
 struct proc* userinit() {
@@ -104,16 +104,22 @@ struct proc* userinit() {
         panic("fail to kalloc");
     }
 
+    memset(mem, 0, PGSIZE);
     memcpy(mem, initcode, sizeof(initcode));
 
-    if (!mappages(p->pagetable, 0, PGSIZE, (uint64_t)mem, PTE_R | PTE_X | PTE_U)) {
+    if (!mappages(p->pagetable, 0, PGSIZE, (uint64_t)mem, PTE_W | PTE_R | PTE_X | PTE_U)) {
         panic("fail to mappages initcode");
     }
+
+    p->trapframe->epc = 0;
+    p->trapframe->sp = PGSIZE;
 
     p->sz = PGSIZE;
     p->context.ra = (uint64_t)forkret;
     p->context.sp = p->kstack + PGSIZE;
     p->state = RUNNABLE;
+
+    release(&p->lock);
 
     return p;
 }
@@ -149,7 +155,7 @@ void scheduler()
                 c->proc = p;
 
                 // Test printf
-                printf("scheduler: switch to pid %d in core %d\n", p->pid, cpuid());
+                // printf("scheduler: switch to pid %d in core %d\n", p->pid, cpuid());
                 swtch(&c->context, &p->context);
 
                 c->proc = NULL;
@@ -194,7 +200,6 @@ struct proc *allocproc()
         acquire(&p->lock);
         if (p->state == UNUSED) {
             p->state = USED;
-            release(&p->lock);
             goto found;
         }
         else {
@@ -216,6 +221,7 @@ found:
         panic("fail to kalloc trapframe");
     }
 
+    memset(p->trapframe, 0, sizeof(struct trapframe));
     if (!mappages(p->pagetable, TRAPFRAME, PGSIZE, (uint64_t)p->trapframe, PTE_R | PTE_W)) {
         panic("fail to mappages trapframe");
     }
@@ -243,20 +249,6 @@ void freeproc(struct proc* p) {
 void forkret() {
     struct proc* p = myproc();
     release(&p->lock);
-
-    p->trapframe->epc = 0;
-
-    void* stack = (void*)kalloc();
-    if (stack == 0) {
-        panic("fail to kalloc stack");
-    }
-
-    p->trapframe->sp = p->sz + PGSIZE;
-    p->sz += PGSIZE;
-
-    if (!mappages(p->pagetable, p->sz - PGSIZE, PGSIZE, (uint64_t)stack, PTE_R | PTE_W | PTE_U)) {
-        panic("fail to mappages stack");
-    }
 
     usertrapret();
 }

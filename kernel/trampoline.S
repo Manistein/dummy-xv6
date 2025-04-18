@@ -54,11 +54,12 @@ uservec:
     ld sp, 8(a0)
 
     ld t2, 0(a0)
+    
+    ld tp, 24(a0)
+
     sfence.vma zero, zero 
     csrw satp, t2
     sfence.vma zero, zero
-
-    ld tp, 24(a0)
 
     # call usertrap
     jr t0

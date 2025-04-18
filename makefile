@@ -52,15 +52,23 @@ CFLAGS += -fno-common -nostdlib
 CFLAGS += -fno-builtin-strncpy -fno-builtin-strncmp -fno-builtin-strlen -fno-builtin-memset
 CFLAGS += -fno-builtin-memmove -fno-builtin-memcmp -fno-builtin-log -fno-builtin-bzero
 CFLAGS += -fno-builtin-strchr -fno-builtin-exit -fno-builtin-malloc -fno-builtin-putc
-CFLAGS += -fno-builtin-freekj
+CFLAGS += -fno-builtin-free
 CFLAGS += -fno-builtin-memcpy -Wno-main
 CFLAGS += -fno-builtin-printf -fno-builtin-fprintf -fno-builtin-vprintf
 CFLAGS += -I.
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 
+# Disable PIE when possible (for Ubuntu 16.10 toolchain)
+ifneq ($(shell $(CC) -dumpspecs 2>/dev/null | grep -e '[^f]no-pie'),)
+	CFLAGS += -fno-pie -no-pie
+endif
+ifneq ($(shell $(CC) -dumpspecs 2>/dev/null | grep -e '[^f]nopie'),)
+	CFLAGS += -fno-pie -nopie
+endif
+
 LDFLAGS = -z max-page-size=4096
 
-ASFLAGS = -march=rv64gc -mabi=lp64d
+ASFLAGS = -march=rv64g -mabi=lp64d
 %.o: %.S
 	$(CC) $(CFLAGS) $(ASFLAGS) -c $< -o $@
 
@@ -72,9 +80,9 @@ $K/kernel: $(OBJS) $K/kernel.ld
 # fs.img: mkfs/mkfs README
 # 	mkfs/mkfs fs.img README
 
-clean:
-	rm -f $K/*.o $K/*.d \
-	*/*.o */*.d */*.asm */*.sym 
+clean: 
+	rm -f *.tex *.dvi *.idx *.aux *.log *.ind *.ilg \
+	*/*.o */*.d */*.asm */*.sym $K/kernel .gdbinit
 
 # try to generate a unique GDB port
 GDBPORT = $(shell expr `id -u` % 5000 + 25000)
@@ -92,7 +100,7 @@ QEMUOPTS += -drive file=fs.img,if=none,format=raw,id=x0
 QEMUOPTS += -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
 
 qemu: $K/kernel fs.img
-	$(QEMU) $(QEMUOPTS)
+	$(QEMU) $(QEMUOPTS) -d int -D qemu.log
 
 .gdbinit: .gdbinit.tmpl-riscv
 	sed "s/:1234/:$(GDBPORT)/" < $^ > $@

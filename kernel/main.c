@@ -26,10 +26,11 @@ void main() {
 
         test_userinit();
         
-        printf("CPU%d initialize success.\n", cpuid());
-        is_initialized = 1;
+        // printf("CPU%d initialize success.\n", cpuid());
 
         __sync_synchronize();
+
+        is_initialized = 1;
     } 
     else {
         while (is_initialized == 0);

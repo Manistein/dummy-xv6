@@ -13,7 +13,7 @@ SECTIONS {
         *(trampsec)
         . = ALIGN(0x1000);
 
-        ASSERT(. - trampoline == 0x1000, "trampoline segment is not page align");
+        ASSERT(. - _trampoline == 0x1000, "trampoline segment is not page align");
         PROVIDE(etext = .);
     }  
 
@@ -28,7 +28,7 @@ SECTIONS {
         . = ALIGN(16);
         *(.sdata .sdata.*)
         . = ALIGN(16);
-        *(.rodata .rodata.*)
+        *(.data .data.*)
     }  
 
     .bss : {
