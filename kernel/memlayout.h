@@ -1,8 +1,18 @@
 #ifndef _memlayout_h_
 #define _memlayout_h_
 
+// base address of PLIC
+#define PLIC 0x0C000000L
+#define PLIC_PRIORITY (PLIC + 0x0)
+#define PLIC_PENDING (PLIC + 0x1000)
+#define PLIC_SENABLE(hart) (PLIC + 0x2080 + (hart) * 0x100)
+#define PLIC_SPRIORITY(hart) (PLIC + 0x201000 + (hart) * 0x2000)
+#define PLIC_SCLAIM(hart) (PLIC + 0x201004 + (hart) * 0x2000)
+
 // base address of UART
-#define UART0 0x10000000
+#define UART0 0x10000000L
+// PLIC IRQ numbers
+#define UART0_IRQ 10
 
 // physical address of hardware
 #define PGSIZE 4096

@@ -6,12 +6,14 @@
 #include <string.h>
 #include "vm.h"
 #include "proc.h"
+#include "plic.h"
+#include "console.h"
 
 static volatile int is_initialized = 0;
 
 void main() {
     if (cpuid() == 0) {
-        uartinit();
+        consoleinit();
         printfinit();
 
         printf("dummyxv6 booting!\n");
@@ -24,6 +26,9 @@ void main() {
         procinit();
         prochartinit();
 
+        plicinit();
+        plicinithart();
+
         test_userinit();
         
         // printf("CPU%d initialize success.\n", cpuid());
@@ -35,13 +40,13 @@ void main() {
     else {
         while (is_initialized == 0);
 
+        __sync_synchronize();
+
         printf("CPU%d starts initializing.\n", cpuid());
 
-        // test kalloc
-        void *p = kalloc();
-        strcpy(p, "hello, world!\n");
-        printf("CPU%d: %s", cpuid(), p);
-        kfree(p); 
+        kvmhartinit();
+        prochartinit();
+        plicinithart();
 
         printf("Initialization of CPU%d complete.\n", cpuid());
     }

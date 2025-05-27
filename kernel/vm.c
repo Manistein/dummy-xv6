@@ -34,6 +34,9 @@ void kvmmake() {
     // uart registers
     kvmmap(kpgtbl, UART0, UART0, PGSIZE, PTE_R | PTE_W);
 
+    // PLIC (Platform-Level Interrupt Controller)
+    kvmmap(kpgtbl, PLIC, PLIC, 0x4000000L, PTE_R | PTE_W);
+
     // kernel text
     kvmmap(kpgtbl, KERNEL_BASE, KERNEL_BASE, (uint64_t)etext - KERNEL_BASE, PTE_R | PTE_X);
 

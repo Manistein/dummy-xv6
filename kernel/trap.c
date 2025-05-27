@@ -5,6 +5,8 @@
 #include "memlayout.h"
 #include "proc.h"
 #include "syscall.h"
+#include "plic.h"
+#include "console.h"
 
 extern char trampoline[], uservec[], userret[], kernelvec[];
 
@@ -88,9 +90,9 @@ void usertrap()
 
     if (which_dev == 2) {
         // test printf
-        printf("usertrap():: pid:%d before yield in core %d\n", p->pid, cpuid()); 
+        // printf("usertrap():: pid:%d before yield in core %d\n", p->pid, cpuid()); 
         yield();
-        printf("usertrap():: pid:%d after yield in core %d\n", p->pid, cpuid()); 
+        // printf("usertrap():: pid:%d after yield in core %d\n", p->pid, cpuid()); 
     }
         
     usertrapret();
@@ -138,8 +140,17 @@ static void clockintr() {
 }
 
 int devintr(uint64_t scause) { 
+    // check if the trap is from a device interrupt
     if (scause == 0x8000000000000009L) {
-        // TODO
+        int irq = plicclaim();
+
+        if (irq == UART0_IRQ) {
+            uartintr();
+        } else if (irq != 0) {
+            printf("devintr(): unexpected IRQ %d\n", irq);
+        }
+
+        pliccomplete(irq);
         return 1;
     }
     // timer interrupt

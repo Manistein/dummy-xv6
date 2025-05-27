@@ -155,7 +155,7 @@ void scheduler()
                 c->proc = p;
 
                 // Test printf
-                printf("scheduler: switch to pid %d in core %d\n", p->pid, cpuid());
+                // printf("scheduler: switch to pid %d in core %d\n", p->pid, cpuid());
                 swtch(&c->context, &p->context);
 
                 c->proc = NULL;

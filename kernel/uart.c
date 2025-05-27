@@ -1,5 +1,6 @@
 #include "common.h"
 #include "spinlock.h"
+#include "console.h"
 
 #define Reg(x) ((volatile unsigned char*)(UART0 + (x)))
 
@@ -48,9 +49,26 @@ void uartinit(void) {
     WriteReg(IER, IER_ENABLE_RX | IER_ENABLE_TX);
 }
 
-void uartputc_sync(char c) {
+void uartputc_sync(int c) {
     push_off();
     while ((ReadReg(LSR) & LSR_TX_IDLE) == 0);
     WriteReg(THR, c);
     pop_off();
+}
+
+int uartgetc(void) {
+    if ((ReadReg(LSR) & LSR_RX_READY) == 0) {
+        return -1; // no data available
+    }
+    return ReadReg(RHR); // read the received character
+}
+
+void uartintr(void) {
+    while(1) {
+        int c = uartgetc();
+        if (c == -1) {
+            break; // no more characters to read
+        }
+        consoleintr(c); // handle the character in the console
+    }
 }
