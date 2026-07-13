@@ -31,3 +31,5 @@ This is a reimplemented version of the MIT xv6 operating system. This simple OS 
  - [ ] 实现图形界面。
  - [ ] 实现一个俄罗斯方块Demo。
  - [ ] 实现一个Flappy Bird的Demo。
+
+配套文章[操作系统构建](http://manistein.club/tags/let-us-build-an-os/)
